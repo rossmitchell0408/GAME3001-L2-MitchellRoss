@@ -124,11 +124,8 @@ void SpaceShip::m_Move()
 		else if (target_rotation < 0.0f)
 		{
 			setRotation(getRotation() - getAccelerationRate());
-	
 		}
 	}
-	
-	
 	
 	getRigidBody()->acceleration = getOrientation() * getAccelerationRate();
 
