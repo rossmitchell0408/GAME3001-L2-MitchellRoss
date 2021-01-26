@@ -1,5 +1,7 @@
 #include "SpaceShip.h"
 
+
+#include "Game.h"
 #include "Util.h"
 
 SpaceShip::SpaceShip()
@@ -18,6 +20,8 @@ SpaceShip::SpaceShip()
 	setMaxSpeed(10.0f);
 	setOrientation(glm::vec2(0.0f, -1.0f));
 	setRotation(0.0f);
+	setAccelerationRate(10.0f);
+	setTurnRate(10.0f);
 }
 
 SpaceShip::~SpaceShip()
@@ -50,7 +54,7 @@ void SpaceShip::setMaxSpeed(const float speed)
 	m_maxSpeed = speed;
 }
 
-glm::vec2 SpaceShip::getOrientation() 
+glm::vec2 SpaceShip::getOrientation() const 
 {
 	return glm::vec2();
 }
@@ -63,6 +67,13 @@ void SpaceShip::setOrientation(const glm::vec2 orientation)
 void SpaceShip::setRotation(const float angle)
 {
 	m_rotationAngle = angle;
+	auto angle_in_radians = (angle - 90.0f) * Util::Deg2Rad;
+
+	auto x = cos(angle_in_radians);
+	auto y = sin(angle_in_radians);
+	
+	// convert angle to normalized vector and store in orientation
+	setOrientation(glm::vec2(x, y));
 }
 
 float SpaceShip::getRotation() const
@@ -92,13 +103,40 @@ void SpaceShip::setAccelerationRate(const float rate)
 
 void SpaceShip::m_Move()
 {
+	auto deltaTime = TheGame::Instance()->getDeltaTime();
+	
 	// direction with magnitude
 	m_targetDirection = m_destination - getTransform()->position;
 	
 	// normalized direction
 	m_targetDirection = Util::normalize(m_targetDirection);
 
-	getRigidBody()->velocity = m_targetDirection * m_maxSpeed;
+	auto target_rotation = Util::signedAngle(getOrientation(), m_targetDirection);
+	//std::cout << "Target rotation angle: " << target_rotation << std::endl;
+	auto turn_sensitivity = 5.0f;
 
+	if (abs(target_rotation) > turn_sensitivity)
+	{
+		if (target_rotation > 0.0f)
+		{
+			setRotation(getRotation() + getAccelerationRate());
+		}
+		else if (target_rotation < 0.0f)
+		{
+			setRotation(getRotation() - getAccelerationRate());
+	
+		}
+	}
+	
+	
+	
+	getRigidBody()->acceleration = getOrientation() * getAccelerationRate();
+
+	// using formula pf = pi + vi*t + 0.5ai*t^2
+	getRigidBody()->velocity += getOrientation() * (deltaTime)
+		+0.5f * getRigidBody()->acceleration * deltaTime;
+
+	getRigidBody()->velocity = Util::clamp(getRigidBody()->velocity, m_maxSpeed);
+	
 	getTransform()->position += getRigidBody()->velocity;
 }
