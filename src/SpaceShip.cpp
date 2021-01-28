@@ -54,17 +54,22 @@ void SpaceShip::setMaxSpeed(const float speed)
 	m_maxSpeed = speed;
 }
 
-glm::vec2 SpaceShip::getOrientation() const 
+glm::vec2 SpaceShip::getOrientation() const
 {
-	return glm::vec2();
+	return m_orientation;
 }
 
-void SpaceShip::setOrientation(const glm::vec2 orientation)
+void SpaceShip::setOrientation(glm::vec2 orientation)
 {
 	m_orientation = orientation;
 }
 
-void SpaceShip::setRotation(const float angle)
+float SpaceShip::getRotation() const
+{
+	return m_rotationAngle;
+}
+
+void SpaceShip::setRotation(float angle)
 {
 	m_rotationAngle = angle;
 	auto angle_in_radians = (angle - 90.0f) * Util::Deg2Rad;
@@ -76,17 +81,12 @@ void SpaceShip::setRotation(const float angle)
 	setOrientation(glm::vec2(x, y));
 }
 
-float SpaceShip::getRotation() const
-{
-	return m_rotationAngle;
-}
-
 float SpaceShip::getTurnRate() const
 {
 	return m_turnRate;
 }
 
-void SpaceShip::setTurnRate(const float rate)
+void SpaceShip::setTurnRate(float rate)
 {
 	m_turnRate = rate;
 }
@@ -96,7 +96,7 @@ float SpaceShip::getAccelerationRate() const
 	return m_accelerationRate;
 }
 
-void SpaceShip::setAccelerationRate(const float rate)
+void SpaceShip::setAccelerationRate(float rate)
 {
 	m_accelerationRate = rate;
 }
@@ -114,16 +114,16 @@ void SpaceShip::m_Move()
 	auto target_rotation = Util::signedAngle(getOrientation(), m_targetDirection);
 	//std::cout << "Target rotation angle: " << target_rotation << std::endl;
 	auto turn_sensitivity = 5.0f;
-
+	
 	if (abs(target_rotation) > turn_sensitivity)
 	{
 		if (target_rotation > 0.0f)
 		{
-			setRotation(getRotation() + getAccelerationRate());
+			setRotation(getRotation() + getTurnRate());
 		}
 		else if (target_rotation < 0.0f)
 		{
-			setRotation(getRotation() - getAccelerationRate());
+			setRotation(getRotation() - getTurnRate());
 		}
 	}
 	

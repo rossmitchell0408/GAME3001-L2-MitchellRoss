@@ -3,16 +3,16 @@
 #define _OBSTACLE_H_
 #include "DisplayObject.h"
 
-class Obstacle : public DisplayObject
+class Obstacle final: public DisplayObject
 {
 public:
 	Obstacle();
 
 	~Obstacle();
+	void draw() override;
+	void update() override;
+	void clean() override;
 private:
-	void draw();
-	void Update();
-	void clean();
 };
 
 #endif

@@ -22,13 +22,13 @@ public:
 	void setDestination(glm::vec2 destination);
 	void setMaxSpeed(float speed);
 	glm::vec2 getOrientation() const;
-	void setOrientation(const glm::vec2 orientation);
-	void setRotation(const float angle);
+	void setOrientation(glm::vec2 orientation);
 	float getRotation() const;
+	void setRotation(float angle);
 	float getTurnRate() const;
-	void setTurnRate(const float rate);
+	void setTurnRate(float rate);
 	float getAccelerationRate() const;
-	void setAccelerationRate(const float rate);
+	void setAccelerationRate(float rate);
 	
 private:
 
